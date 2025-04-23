@@ -11,8 +11,9 @@ scaler=pickle.load(open('scaling.pkl','rb'))
 
 @app.route('/')
 def home():
-    return render_template('home.html')
-@app.route('/predict_api',methods=['POST'])
+    return render_template('home.html', prediction_text=None)
+
+@app.route('/predict_api', methods=['POST'])
 def predict_api():
     try:
         data = request.json['data']
@@ -23,6 +24,20 @@ def predict_api():
         return jsonify({'prediction': output[0]})
     except Exception as e:
         return jsonify({'error': str(e)})
+
+@app.route('/predict', methods=['POST'])
+def predict():
+    data = [float(x) for x in request.form.values()]
+    final_input = scaler.transform(np.array(data).reshape(1, -1))
+    print(final_input)
+    output = regmodel.predict(final_input)[0]
+    return render_template("home.html", prediction_text=f"THE HOUSE PRICE PREDICTION IS: {output}")
+
+
+
+
+                                                                                             
+
 
 
 if __name__ == "__main__":

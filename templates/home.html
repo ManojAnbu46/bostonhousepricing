@@ -1,4 +1,376 @@
-<h1>
-    HELLO WORLD 
-    
-</h1>
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Boston House Price Prediction</title>
+    <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #4361ee;
+            --secondary-color: #3a0ca3;
+            --accent-color: #f72585;
+            --light-color: #f8f9fa;
+            --dark-color: #212529;
+            --glass-color: rgba(255, 255, 255, 0.25);
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Montserrat', sans-serif;
+            background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), 
+                              url('https://images.unsplash.com/photo-1605276374104-dee2a0ed3cd6?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            color: #333;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .user-info {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            color: white;
+            background-color: rgba(0, 0, 0, 0.6);
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            z-index: 100;
+            backdrop-filter: blur(5px);
+        }
+
+        .container {
+            background: var(--glass-color);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            max-width: 500px;
+            padding: 40px;
+            margin: 20px;
+            border-radius: 20px;
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+            transition: all 0.4s ease;
+        }
+
+        .container:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 40px 0 rgba(31, 38, 135, 0.45);
+        }
+
+        h1 {
+            font-family: 'Pacifico', cursive;
+            text-align: center;
+            margin-bottom: 30px;
+            color: white;
+            font-size: 2.5rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            letter-spacing: 1px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: white;
+            font-size: 0.95rem;
+        }
+
+        .form-group label i {
+            margin-right: 10px;
+            color: var(--accent-color);
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 14px 18px;
+            border: none;
+            border-radius: 10px;
+            box-sizing: border-box;
+            font-family: 'Montserrat', sans-serif;
+            transition: all 0.3s ease;
+            background-color: rgba(255, 255, 255, 0.9);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        input[type="text"]:focus {
+            background-color: white;
+            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.3);
+            outline: none;
+        }
+
+        button {
+            width: 100%;
+            padding: 16px;
+            margin: 25px 0 15px;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            font-family: 'Montserrat', sans-serif;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+            background: linear-gradient(135deg, var(--secondary-color), var(--primary-color));
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        .prediction-result {
+            margin-top: 25px;
+            padding: 18px;
+            border-radius: 10px;
+            background-color: rgba(255, 255, 255, 0.9);
+            border-left: 5px solid var(--accent-color);
+            font-weight: 600;
+            text-align: center;
+            display: none;
+            animation: fadeIn 0.6s ease;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .info-icon {
+            color: var(--accent-color);
+            margin-left: 8px;
+            cursor: help;
+            font-size: 0.9rem;
+        }
+
+        .tooltip {
+            position: absolute;
+            background-color: var(--dark-color);
+            color: white;
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            top: 100%;
+            left: 0;
+            z-index: 1;
+            width: 220px;
+            display: none;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+
+        .info-icon:hover + .tooltip {
+            display: block;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            margin: 15px 0;
+            color: white;
+        }
+
+        .loading i {
+            color: var(--accent-color);
+            font-size: 1.8rem;
+            animation: spin 1.2s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 25px;
+            font-size: 0.8rem;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                margin: 15px;
+                padding: 25px;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+            
+            input[type="text"] {
+                padding: 12px 15px;
+            }
+            
+            button {
+                padding: 14px;
+            }
+            
+            .user-info {
+                font-size: 0.8rem;
+                top: 10px;
+                left: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="user-info">
+        Manoj - 6th Sem BCA<br>Data Science Project (Boston House Prediction)
+    </div>
+
+    <div class="container">
+        <h1>Boston House Price Prediction</h1>
+        <form id="predictionForm" action="{{ url_for('predict')}}" method="post">
+            <div class="form-group">
+                <label><i class="fas fa-shield-alt"></i>Crime Rate (CRIM)</label>
+                <input type="text" name="CRIM" placeholder="Per capita crime rate by town" required>
+                <span class="info-icon">ⓘ<span class="tooltip">Crime rate per capita by town. Typical values range from 0.01 to 89.</span></span>
+            </div>
+            
+            <div class="form-group">
+                <label><i class="fas fa-home"></i>Residential Land (ZN)</label>
+                <input type="text" name="ZN" placeholder="Proportion of residential land" required>
+                <span class="info-icon">ⓘ<span class="tooltip">Proportion of residential land zoned for lots over 25,000 sq.ft. Typically 0-100.</span></span>
+            </div>
+            
+            <div class="form-group">
+                <label><i class="fas fa-building"></i>Business Acres (INDUS)</label>
+                <input type="text" name="INDUS" placeholder="Non-retail business acres per town" required>
+                <span class="info-icon">ⓘ<span class="tooltip">Proportion of non-retail business acres per town. Typically 0.5-28.</span></span>
+            </div>
+            
+            <div class="form-group">
+                <label><i class="fas fa-water"></i>Charles River (CHAS)</label>
+                <input type="text" name="CHAS" placeholder="1 if tract bounds river, else 0" required>
+                <span class="info-icon">ⓘ<span class="tooltip">Charles River dummy variable (1 if tract bounds river; 0 otherwise). Enter 0 or 1.</span></span>
+            </div>
+            
+            <div class="form-group">
+                <label><i class="fas fa-smog"></i>Nitric Oxides (NOX)</label>
+                <input type="text" name="NOX" placeholder="Nitric oxides concentration" required>
+                <span class="info-icon">ⓘ<span class="tooltip">Nitric oxides concentration (parts per 10 million). Typically 0.38-0.87.</span></span>
+            </div>
+            
+            <div class="form-group">
+                <label><i class="fas fa-door-open"></i>Avg Rooms (RM)</label>
+                <input type="text" name="RM" placeholder="Average number of rooms" required>
+                <span class="info-icon">ⓘ<span class="tooltip">Average number of rooms per dwelling. Typically 3.5-8.8.</span></span>
+            </div>
+            
+            <div class="form-group">
+                <label><i class="fas fa-history"></i>Property Age (AGE)</label>
+                <input type="text" name="AGE" placeholder="Proportion of old units" required>
+                <span class="info-icon">ⓘ<span class="tooltip">Proportion of owner-occupied units built prior to 1940. Typically 2-100.</span></span>
+            </div>
+            
+            <div class="form-group">
+                <label><i class="fas fa-road"></i>Distance to Work (DIS)</label>
+                <input type="text" name="DIS" placeholder="Distance to employment centers" required>
+                <span class="info-icon">ⓘ<span class="tooltip">Weighted distances to five Boston employment centers. Typically 1-13.</span></span>
+            </div>
+            
+            <div class="form-group">
+                <label><i class="fas fa-highway"></i>Highway Access (RAD)</label>
+                <input type="text" name="RAD" placeholder="Index of accessibility to highways" required>
+                <span class="info-icon">ⓘ<span class="tooltip">Index of accessibility to radial highways. Typically 1-24.</span></span>
+            </div>
+            
+            <div class="form-group">
+                <label><i class="fas fa-file-invoice-dollar"></i>Property Tax (TAX)</label>
+                <input type="text" name="TAX" placeholder="Full-value property tax rate" required>
+                <span class="info-icon">ⓘ<span class="tooltip">Full-value property-tax rate per $10,000. Typically 180-711.</span></span>
+            </div>
+            
+            <div class="form-group">
+                <label><i class="fas fa-chalkboard-teacher"></i>Pupil-Teacher Ratio (PTRATIO)</label>
+                <input type="text" name="PTRATIO" placeholder="Pupil-teacher ratio by town" required>
+                <span class="info-icon">ⓘ<span class="tooltip">Pupil-teacher ratio by town. Typically 12-22.</span></span>
+            </div>
+            
+            <div class="form-group">
+                <label><i class="fas fa-users"></i>Black Proportion (B)</label>
+                <input type="text" name="B" placeholder="1000(Bk - 0.63)²" required>
+                <span class="info-icon">ⓘ<span class="tooltip">1000(Bk - 0.63)² where Bk is the proportion of Black residents. Typically 0-400.</span></span>
+            </div>
+            
+            <div class="form-group">
+                <label><i class="fas fa-percentage"></i>Lower Status (LSTAT)</label>
+                <input type="text" name="LSTAT" placeholder="% lower status population" required>
+                <span class="info-icon">ⓘ<span class="tooltip">% lower status of the population. Typically 1-38.</span></span>
+            </div>
+            <div class="form-group">
+                <label><i class="fas fa-dollar-sign"></i>Median Value (MEDV)</label>
+                <input type="text" name="MEDV" placeholder="Median home value ($1000s)" required>
+                <span class="info-icon">ⓘ<span class="tooltip">Median value of owner-occupied homes in $1000s. Typically 5-50.</span></span>
+            </div>
+
+            
+            <div class="loading" id="loadingIndicator">
+                <i class="fas fa-spinner"></i> Processing your request...
+            </div>
+            
+            <button type="submit" id="predictButton">
+                <i class="fas fa-calculator"></i> Predict Price
+            </button>
+        </form>
+        
+        <div class="prediction-result" id="predictionResult">
+            {{prediction_text}}
+        </div>
+        
+        <footer>
+            <p>Boston House Price Prediction Model</p>
+        </footer>
+    </div>
+
+    <script>
+        document.getElementById('predictionForm').addEventListener('submit', function(e) {
+            // Show loading indicator
+            document.getElementById('loadingIndicator').style.display = 'block';
+            document.getElementById('predictButton').disabled = true;
+            document.getElementById('predictButton').innerHTML = '<i class="fas fa-spinner fa-pulse"></i> Processing...';
+            
+            // If this is a Flask app, the form will submit normally
+            // For demo purposes, we'll simulate a response after 1.5 seconds
+            setTimeout(function() {
+                document.getElementById('predictionResult').style.display = 'block';
+                document.getElementById('loadingIndicator').style.display = 'none';
+                document.getElementById('predictButton').disabled = false;
+                document.getElementById('predictButton').innerHTML = '<i class="fas fa-calculator"></i> Predict Price';
+                
+                // Scroll to the prediction result
+                document.getElementById('predictionResult').scrollIntoView({ behavior: 'smooth' });
+            }, 1500);
+        });
+        
+        // Show the prediction result if it's not empty (for Flask template)
+        window.onload = function() {
+            const predictionText = "{{prediction_text}}";
+            if(predictionText && predictionText.trim() !== "") {
+                document.getElementById('predictionResult').style.display = 'block';
+                document.getElementById('predictionResult').textContent = predictionText;
+            }
+        };
+    </script>
+</body>
+</html>
