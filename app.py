@@ -13,25 +13,28 @@ scaler=pickle.load(open('scaling.pkl','rb'))
 def home():
     return render_template('home.html', prediction_text=None)
 
-@app.route('/predict_api', methods=['POST'])
-def predict_api():
-    try:
-        data = request.json['data']
-        input_array = np.array(list(data.values())).reshape(1, -1)
-        print(f"Input shape: {input_array.shape}")
-        new_data = scaler.transform(input_array)
-        output = regmodel.predict(new_data)
-        return jsonify({'prediction': output[0]})
-    except Exception as e:
-        return jsonify({'error': str(e)})
-
 @app.route('/predict', methods=['POST'])
 def predict():
     data = [float(x) for x in request.form.values()]
     final_input = scaler.transform(np.array(data).reshape(1, -1))
     print(final_input)
     output = regmodel.predict(final_input)[0]
-    return render_template("home.html", prediction_text=f"THE HOUSE PRICE PREDICTION IS: {output}")
+
+    # --- New Code to convert to INR ---
+    prediction_in_usd = output * 1000  # Convert to dollars
+    conversion_rate = 83  # 1 USD ≈ 83 INR
+    prediction_in_inr = prediction_in_usd * conversion_rate
+
+    # Convert to lakh or crore
+    if prediction_in_inr >= 10000000:
+        prediction_in_crore = prediction_in_inr / 10000000
+        formatted_prediction = f"₹{prediction_in_crore:.2f} Crore"
+    else:
+        prediction_in_lakh = prediction_in_inr / 100000
+        formatted_prediction = f"₹{prediction_in_lakh:.2f} Lakh"
+    # --- End of New Code ---
+
+    return render_template("home.html", prediction_text=f"THE HOUSE PRICE PREDICTION IS: {formatted_prediction}")
 
 
 
